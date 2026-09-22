@@ -1,1 +1,31 @@
-implementationschecklista_iot_vg.md
+plan.md
+
+# Secrets – never commit
+.env
+*.env
+!.env.example
+passwd
+*.key
+*.pem
+*.crt
+*.csr
+*.srl
+certs/
+
+# ESP-IDF
+sdkconfig
+sdkconfig.old
+build/
+managed_components/
+dependencies.lock
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Editor/OS
+.vscode/
+.DS_Store
+Thumbs.db

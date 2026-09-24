@@ -1,4 +1,4 @@
-plan.md
+*.md
 
 # Secrets – never commit
 .env

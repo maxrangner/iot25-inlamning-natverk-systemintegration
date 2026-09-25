@@ -2,6 +2,7 @@
 #include "esp_log.h"
 #include "esp_rom_sys.h"
 #include "esp_timer.h"
+#include "wifi.h"
 
 #define SENSOR_GPIO GPIO_NUM_4
 #define SENSOR_PERIOD_US (10 * 1000 * 1000) // 10 seconds
@@ -26,6 +27,9 @@ static void timer_callback(void *arg)
 
 extern "C" void app_main(void)
 {
+    static wifi::Wifi wifi;
+    wifi.start();
+
     const esp_timer_create_args_t args = {
         .callback = timer_callback,
         .arg = nullptr,

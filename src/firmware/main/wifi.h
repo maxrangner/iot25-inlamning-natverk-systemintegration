@@ -1,5 +1,7 @@
 #pragma once
 
+#include "esp_event.h"
+
 namespace wifi {
 
 class Wifi {
@@ -8,6 +10,7 @@ public:
 
 private:
     static void task(void *pvParameters);
+    static void event_handler(void *arg, esp_event_base_t base, int32_t id, void *data);
 
     void init();
     void connect();

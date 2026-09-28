@@ -30,12 +30,24 @@ void Mqtt::event_handler(void *arg, esp_event_base_t base, int32_t id, void *dat
 
     if (id == MQTT_EVENT_CONNECTED) {
         ESP_LOGI(TAG, "Mqtt connected");
-        esp_mqtt_client_publish(self->client, kTopic, kOnlineMsg, 0, kQoS, kRetain);
+        self->publish(kTopic, kOnlineMsg);
     } else if (id == MQTT_EVENT_DISCONNECTED) {
         ESP_LOGW(TAG, "Mqtt disconnected");
     } else if (id == MQTT_EVENT_ERROR) {
         ESP_LOGE(TAG, "Mqtt error");
     }
+}
+
+void Mqtt::publish(const char* topic, const char* payload) {
+    ESP_LOGI(TAG,
+             "\n\n"
+             "┌─ MQTT Publish ────────────────────────────\n"
+             "│ topic: %s\n"
+             "│ payload: %s\n"
+             "└───────────────────────────────────────────\n",
+             topic,
+             payload);
+    esp_mqtt_client_publish(client, topic, payload, 0, kQoS, kRetain);
 }
 
 } //namespace mqtt

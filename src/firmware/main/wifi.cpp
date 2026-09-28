@@ -133,4 +133,8 @@ void Wifi::sync_time()
     esp_netif_sntp_init(&config);
 }
 
+bool Wifi::is_connected() const {
+    return connected;
+}
+
 } // namespace wifi

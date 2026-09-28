@@ -8,6 +8,7 @@ namespace wifi {
 class Wifi {
 public:
     void start();
+    bool is_connected() const;
 
 private:
     static void task(void *pvParameters);

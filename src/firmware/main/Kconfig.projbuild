@@ -4,12 +4,18 @@ menu "IoT25 configuration"
         string "Wi-Fi SSID"
         default "changeme"
         help
-            Name of the Wi-Fi network the device joins.
+            The Wi-Fi network name.
 
     config IOT25_WIFI_PASSWORD
         string "Wi-Fi password"
         default "changeme"
         help
-            Password for the Wi-Fi network. Stored in sdkconfig, which is gitignored.
+            The WiFi password. Saved in sdkconfig, which is gitignored.
+
+    config IOT25_MQTT_BROKER_URI
+        string "MQTT Broker"
+        default "mqtt://192.168.50.150:1883"
+        help
+            Broker for MQTT
 
 endmenu

@@ -1,0 +1,15 @@
+menu "IoT25 configuration"
+
+    config IOT25_WIFI_SSID
+        string "Wi-Fi SSID"
+        default "changeme"
+        help
+            Name of the Wi-Fi network the device joins.
+
+    config IOT25_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default "changeme"
+        help
+            Password for the Wi-Fi network. Stored in sdkconfig, which is gitignored.
+
+endmenu

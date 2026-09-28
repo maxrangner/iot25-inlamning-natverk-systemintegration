@@ -9,6 +9,7 @@
 #include "freertos/task.h"
 #include "nvs_flash.h"
 
+
 namespace wifi {
 
 constexpr uint16_t kWifiTaskStackSize = 4096;
@@ -48,13 +49,14 @@ void Wifi::event_handler(void *arg, esp_event_base_t base, int32_t id, void *dat
 
     if (base == WIFI_EVENT && id == WIFI_EVENT_STA_DISCONNECTED) {
         auto *event = static_cast<wifi_event_sta_disconnected_t *>(data);
-        ESP_LOGW(TAG, "disconnected, reason=%d", event->reason);
+        ESP_LOGW(TAG, "disconnected, reason=%d, retry in %d s", event->reason, self->backoff_seconds);
 
         self->connected = false;
-        self->handle_disconnect();
+        esp_timer_start_once(self->reconnect_timer, self->backoff_seconds * 1000000ULL);
     } else if (base == IP_EVENT && id == IP_EVENT_STA_GOT_IP) {
         auto *event = static_cast<ip_event_got_ip_t *>(data);
         self->connected = true;
+        self->backoff_seconds = 1;
         ESP_LOGI(TAG, "got ip " IPSTR, IP2STR(&event->ip_info.ip));
     }
 }
@@ -79,6 +81,15 @@ void Wifi::init()
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, event_handler, this));
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+
+    const esp_timer_create_args_t args = {
+        .callback = handle_disconnect,
+        .arg = this,
+        .dispatch_method = ESP_TIMER_TASK,
+        .name = "wifi_retry",
+        .skip_unhandled_events = false,
+        };
+    ESP_ERROR_CHECK(esp_timer_create(&args, &reconnect_timer));
 }
 
 void Wifi::connect()
@@ -96,9 +107,19 @@ void Wifi::connect()
     ESP_ERROR_CHECK(esp_wifi_connect());
 }
 
-void Wifi::handle_disconnect()
+void Wifi::handle_disconnect(void *arg)
 {
-    ESP_ERROR_CHECK(esp_wifi_connect());
+    auto *self = static_cast<Wifi *>(arg);
+
+    esp_err_t err = esp_wifi_connect();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "reconnect failed: %s", esp_err_to_name(err));
+    }
+
+    self->backoff_seconds = self->backoff_seconds * 2;
+    if (self->backoff_seconds > 60) {
+        self->backoff_seconds = 60;
+    }
 }
 
 void Wifi::sync_time()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esp_event.h"
+#include "esp_timer.h"
 
 namespace wifi {
 
@@ -14,11 +15,12 @@ private:
 
     void init();
     void connect();
-    void handle_disconnect();
+    static void handle_disconnect(void *arg);
     void sync_time();
 
     int backoff_seconds = 1;
     bool connected = false;
+    esp_timer_handle_t reconnect_timer = nullptr;
 };
 
 } // namespace wifi

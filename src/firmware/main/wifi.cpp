@@ -1,13 +1,16 @@
 #include "wifi.h"
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "esp_log.h"
 #include "esp_netif.h"
 #include "esp_wifi.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "nvs_flash.h"
+#include "esp_netif_sntp.h"
 
 
 namespace wifi {
@@ -37,6 +40,7 @@ void Wifi::task(void *pvParameters)
 
     self->init();
     self->connect();
+    self->sync_time();
 
     while (true) {
         vTaskDelay(pdMS_TO_TICKS(kWifiLoopPeriodMs));
@@ -55,6 +59,7 @@ void Wifi::event_handler(void *arg, esp_event_base_t base, int32_t id, void *dat
         esp_timer_start_once(self->reconnect_timer, self->backoff_seconds * 1000000ULL);
     } else if (base == IP_EVENT && id == IP_EVENT_STA_GOT_IP) {
         auto *event = static_cast<ip_event_got_ip_t *>(data);
+
         self->connected = true;
         self->backoff_seconds = 1;
         ESP_LOGI(TAG, "got ip " IPSTR, IP2STR(&event->ip_info.ip));
@@ -124,6 +129,8 @@ void Wifi::handle_disconnect(void *arg)
 
 void Wifi::sync_time()
 {
+    esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+    esp_netif_sntp_init(&config);
 }
 
 } // namespace wifi

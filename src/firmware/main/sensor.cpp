@@ -1,6 +1,7 @@
 #include "sensor.h"
 
 #include <stdint.h>
+#include <time.h>
 #include "dht.h"
 #include "esp_log.h"
 #include "esp_rom_sys.h"
@@ -42,6 +43,7 @@ void Sensor::task(void *pvParameters)
         esp_rom_delay_us(30000); // The DHT driver disables interrupts for 20 ms, which makes the console drop the next line
 
         if (err == ESP_OK) {
+            ESP_LOGI(TAG, "unix time: %lld", (long long)time(nullptr));
             ESP_LOGI(TAG, "temp = %.1f C, humidity = %.1f %%", temperature, humidity);
         } else {
             ESP_LOGW(TAG, "Error reading sensor");

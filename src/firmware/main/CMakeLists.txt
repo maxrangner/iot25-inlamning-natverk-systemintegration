@@ -1,2 +1,2 @@
-idf_component_register(SRCS "app_main.cpp" "dht11.cpp" "wifi.cpp"
+idf_component_register(SRCS "app_main.cpp" "sensor.cpp" "wifi.cpp"
                        INCLUDE_DIRS ".")

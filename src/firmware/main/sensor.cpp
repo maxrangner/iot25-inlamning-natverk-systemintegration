@@ -17,8 +17,9 @@ constexpr uint32_t kSensorPeriodMs = 10000;
 
 static const char *TAG = "sensor";
 
-void Sensor::start()
+void Sensor::start(mqtt::Mqtt* mqtt_)
 {
+    mqtt = mqtt_;
     xTaskCreate(task,
                 "sensor",
                 kSensorTaskStackSize,
@@ -55,7 +56,14 @@ void Sensor::task(void *pvParameters)
 
 esp_err_t Sensor::read(float *temperature, float *humidity)
 {
-    return dht_read_float_data(DHT_TYPE_DHT11, kSensorGpio, humidity, temperature);
+    esp_err_t err = dht_read_float_data(DHT_TYPE_DHT11, kSensorGpio, humidity, temperature);
+    if (err != ESP_OK) {
+        ESP_LOGI(TAG, "Error reading sensor.");
+        return err;
+    }
+    
+    // mqtt->publish()
+    return err;
 }
 
 } // namespace sensor

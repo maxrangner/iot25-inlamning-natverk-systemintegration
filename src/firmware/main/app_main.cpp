@@ -9,9 +9,11 @@ extern "C" void app_main(void)
     static mqtt::Mqtt mqtt;
 
     wifi.start();
-    sensor.start();
+
     while (!wifi.is_connected()) {
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
     mqtt.start();
+
+    sensor.start(&mqtt);
 }

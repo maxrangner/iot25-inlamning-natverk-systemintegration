@@ -5,17 +5,11 @@ namespace mqtt {
 
 constexpr char TAG[] = "mqtt";
 
-constexpr char kTopic[] = "iot25/max/status/esp32-c3-01";
-constexpr uint8_t kQoS = 1;
-constexpr uint8_t kRetain = 1;
-constexpr char kOnlineMsg[] = "online";
-constexpr char kOfflineMsg[] = "offline";
-
 void Mqtt::start() {
     esp_mqtt_client_config_t cfg = {};
     cfg.broker.address.uri = CONFIG_IOT25_MQTT_BROKER_URI;
     cfg.credentials.client_id = "esp32-c3-01";
-    cfg.session.last_will.topic = kTopic;
+    cfg.session.last_will.topic = kTopicStatus;
     cfg.session.last_will.msg = kOfflineMsg;
     cfg.session.last_will.qos = kQoS;
     cfg.session.last_will.retain = kRetain;
@@ -30,24 +24,53 @@ void Mqtt::event_handler(void *arg, esp_event_base_t base, int32_t id, void *dat
 
     if (id == MQTT_EVENT_CONNECTED) {
         ESP_LOGI(TAG, "Mqtt connected");
-        self->publish(kTopic, kOnlineMsg);
+        self->connected = true;
+        esp_mqtt_client_publish(self->client, kTopicStatus, kOnlineMsg, 0, kQoS, kRetain);
     } else if (id == MQTT_EVENT_DISCONNECTED) {
         ESP_LOGW(TAG, "Mqtt disconnected");
+        self->connected = false;
     } else if (id == MQTT_EVENT_ERROR) {
         ESP_LOGE(TAG, "Mqtt error");
     }
 }
 
-void Mqtt::publish(const char* topic, const char* payload) {
+void Mqtt::publish(const sensor::SensorReading &reading) {
+    if (!connected) {
+        return;
+    }
+
+    std::string payload = format_json(reading);
+
+    char topic[kTopicSize];
+    snprintf(topic, sizeof(topic), "%s%s%s", kTopicBase, "sensor/", reading.sensorId);
+
     ESP_LOGI(TAG,
              "\n\n"
-             "┌─ MQTT Publish ────────────────────────────\n"
+             "┌─ MQTT Publish · asd ──────────────────────\n"
+             "| sensorId: %s\n"
              "│ topic: %s\n"
-             "│ payload: %s\n"
+             "│ value: %f\n"
+             "│ unit: %s\n"
              "└───────────────────────────────────────────\n",
+             reading.sensorId,
              topic,
-             payload);
-    esp_mqtt_client_publish(client, topic, payload, 0, kQoS, kRetain);
+             reading.value,
+             reading.unit
+            );
+
+    esp_mqtt_client_publish(client, topic, payload.c_str(), 0, kQoS, kDontRetain);
+}
+
+std::string Mqtt::format_json(const sensor::SensorReading &reading) {
+    char buffer[kPayloadBufferSize];
+    snprintf(buffer,
+             sizeof(buffer),
+            "{\"sensorId\":\"%s\", \"timestamp\":%lld, \"value\":%.2f, \"unit\":\"%s\"}",
+            reading.sensorId,
+            reading.timestamp,
+            reading.value,
+            reading.unit);
+    return buffer;
 }
 
 } //namespace mqtt

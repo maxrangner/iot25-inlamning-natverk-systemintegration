@@ -63,11 +63,17 @@ void Mqtt::publish(const sensor::SensorReading &reading) {
 
 std::string Mqtt::format_json(const sensor::SensorReading &reading) {
     char buffer[kPayloadBufferSize];
+
+    struct tm tm;
+    gmtime_r(&reading.timestamp, &tm);
+    char ts[25];
+    strftime(ts, sizeof(ts), "%Y-%m-%dT%H:%M:%SZ", &tm);
+
     snprintf(buffer,
              sizeof(buffer),
-            "{\"sensorId\":\"%s\", \"timestamp\":%lld, \"value\":%.2f, \"unit\":\"%s\"}",
+            "{\"sensorId\":\"%s\", \"timestamp\":%s, \"value\":%.2f, \"unit\":\"%s\"}",
             reading.sensorId,
-            reading.timestamp,
+            ts,
             reading.value,
             reading.unit);
     return buffer;

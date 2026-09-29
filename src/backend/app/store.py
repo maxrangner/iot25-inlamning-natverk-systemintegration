@@ -1,6 +1,7 @@
 import threading
 from datetime import datetime, timezone
 
+STALE_AFTER_SECONDS = 30
 CATEGORIES = ("syntax", "structure", "type", "range")
 
 
@@ -48,3 +49,34 @@ class Store:
         with self.lock:
             self.device_online = online
 
+    def latest(self):
+        with self.lock:
+            return list(self.readings.values())
+
+    def get(self, sensor_id):
+        with self.lock:
+            return self.readings.get(sensor_id)
+
+    def status(self):
+        now = now_utc()
+        with self.lock:
+            if self.last_reading_at is None:
+                last_reading_at = None
+                seconds_since_last = None
+            else:
+                last_reading_at = self.last_reading_at.isoformat(timespec="seconds")
+                seconds_since_last = round((now - self.last_reading_at).total_seconds(), 1)
+
+            return {
+                "mqttConnected": self.mqtt_connected,
+                "deviceOnline": self.device_online,
+                "messagesReceived": self.messages_received,
+                "messagesAccepted": self.messages_accepted,
+                "validationErrors": dict(self.validation_errors),
+                "mqttReconnects": self.mqtt_reconnects,
+                "lastReadingAt": last_reading_at,
+                "secondsSinceLastReading": seconds_since_last,
+                "stale": seconds_since_last is None or seconds_since_last > STALE_AFTER_SECONDS,
+                "startedAt": self.started_at.isoformat(timespec="seconds"),
+                "uptimeSeconds": round((now - self.started_at).total_seconds()),
+            }

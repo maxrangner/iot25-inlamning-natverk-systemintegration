@@ -9,11 +9,14 @@ namespace mqtt {
 
 constexpr uint8_t kPayloadBufferSize = 150;
 constexpr uint8_t kTopicSize = 100;
+
 constexpr char kTopicBase[] = "iot25/max/";
 constexpr char kTopicStatus[] = "iot25/max/status/esp32-c3-01";
+
 constexpr uint8_t kQoS = 1;
 constexpr uint8_t kDontRetain = 0;
 constexpr uint8_t kRetain = 1;
+
 constexpr char kOnlineMsg[] = "online";
 constexpr char kOfflineMsg[] = "offline";
 

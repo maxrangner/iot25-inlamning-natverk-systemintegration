@@ -7,8 +7,6 @@
 
 namespace sensor {
 
-
-
 class Dht11Sensor {
 public:
     void start(mqtt::Mqtt* mqtt);

@@ -1,16 +1,15 @@
-#include "sensor.h"
+#include "dht11.h"
 
 #include <stdint.h>
 #include <time.h>
 #include "dht.h"
 #include "esp_log.h"
-#include "esp_rom_sys.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-namespace sensor {
+namespace dht11 {
 
-static const char *TAG = "sensor";
+static const char *TAG = "dht11";
 
 constexpr gpio_num_t kSensorGpio = GPIO_NUM_4;
 
@@ -27,7 +26,7 @@ void Dht11Sensor::start(mqtt::Mqtt* mqtt_)
 {
     mqtt = mqtt_;
     xTaskCreate(task,
-                "sensor",
+                "dht11",
                 kSensorTaskStackSize,
                 this,
                 kSensorTaskPriority,
@@ -45,26 +44,19 @@ void Dht11Sensor::task(void *pvParameters)
         SensorReading temp_reading;
         SensorReading humid_reading;
         esp_err_t err = self->read(&temp_reading, &humid_reading);
-        if (err == ESP_OK) {
-            vTaskDelay(pdMS_TO_TICKS(50)); // The DHT driver disables interrupts for 20 ms, which makes the console drop the next line
+        vTaskDelay(pdMS_TO_TICKS(50)); // The DHT driver disables interrupts for 20 ms, which makes the console drop the next line
 
-            if (time(nullptr) < kMinValidTime) {
+        if (err != ESP_OK) {
+            ESP_LOGW(TAG, "Error reading dht11.");
+        } else if (time(nullptr) < kMinValidTime) {
                 ESP_LOGW(TAG, "Time not synced. Not calling publish.");
-                return;
-            }
+        } else {
 
+            ESP_LOGI(TAG, "temp = %.1f C, humidity = %.1f %%", temp_reading.value, humid_reading.value);
             self->mqtt->publish(temp_reading);
             self->mqtt->publish(humid_reading);
+        } 
 
-            if (err == ESP_OK) {
-                ESP_LOGI(TAG, "unix time: %lld", (long long)time(nullptr));
-                ESP_LOGI(TAG, "temp = %.1f C, humidity = %.1f %%", temp_reading.value, humid_reading.value);
-            } else {
-                ESP_LOGW(TAG, "Error reading sensor");
-            }
-        } else if (err != ESP_OK) {
-            ESP_LOGW(TAG, "Error reading sensor.");
-        }
         vTaskDelay(pdMS_TO_TICKS(kSensorReadInvervalMs));
     }
 }
@@ -92,4 +84,4 @@ esp_err_t Dht11Sensor::read(SensorReading* temp_reading, SensorReading* humid_re
     return err;
 }
 
-} // namespace sensor
+} // namespace dht11

@@ -5,7 +5,7 @@
 #include "mqtt.h"
 #include "reading.h"
 
-namespace sensor {
+namespace dht11 {
 
 class Dht11Sensor {
 public:
@@ -15,8 +15,7 @@ private:
     static void task(void *pvParameters);
     esp_err_t read(SensorReading* temp_reading, SensorReading* humid_reading);
 
-    mqtt::Mqtt* mqtt;
-    uint8_t sensorId = 0;
+    mqtt::Mqtt* mqtt = nullptr;
 };
 
-} // namespace sensor
+} // namespace dht11

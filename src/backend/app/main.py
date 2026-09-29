@@ -21,6 +21,7 @@ store = Store()
 @asynccontextmanager
 async def lifespan(app):
     client = create_client(store)
+    client.username_pw_set(config.MQTT_USERNAME, config.MQTT_PASSWORD)
     client.connect_async(config.MQTT_HOST, config.MQTT_PORT)
     client.loop_start()
     log.info("event=backend_started mqtt_host=%s mqtt_port=%s", config.MQTT_HOST, config.MQTT_PORT)

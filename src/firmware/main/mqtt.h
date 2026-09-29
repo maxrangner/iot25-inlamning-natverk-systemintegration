@@ -23,11 +23,11 @@ constexpr char kOfflineMsg[] = "offline";
 class Mqtt {
 public:
     void start();
-    void publish(const sensor::SensorReading &reading);
+    void publish(const SensorReading &reading);
     
 private:
     static void event_handler(void *arg, esp_event_base_t base, int32_t id, void *data);
-    std::string format_json(const sensor::SensorReading &reading);
+    std::string format_json(const SensorReading &reading);
 
     esp_mqtt_client_handle_t client = nullptr;
     bool connected = false;

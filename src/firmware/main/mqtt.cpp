@@ -34,7 +34,7 @@ void Mqtt::event_handler(void *arg, esp_event_base_t base, int32_t id, void *dat
     }
 }
 
-void Mqtt::publish(const sensor::SensorReading &reading) {
+void Mqtt::publish(const SensorReading &reading) {
     if (!connected) {
         return;
     }
@@ -61,7 +61,7 @@ void Mqtt::publish(const sensor::SensorReading &reading) {
     esp_mqtt_client_publish(client, topic, payload.c_str(), 0, kQoS, kDontRetain);
 }
 
-std::string Mqtt::format_json(const sensor::SensorReading &reading) {
+std::string Mqtt::format_json(const SensorReading &reading) {
     char buffer[kPayloadBufferSize];
 
     struct tm tm;
@@ -71,7 +71,7 @@ std::string Mqtt::format_json(const sensor::SensorReading &reading) {
 
     snprintf(buffer,
              sizeof(buffer),
-            "{\"sensorId\":\"%s\", \"timestamp\":%s, \"value\":%.2f, \"unit\":\"%s\"}",
+            "{\"sensorId\":\"%s\", \"timestamp\":\"%s\", \"value\":%.2f, \"unit\":\"%s\"}",
             reading.sensorId,
             ts,
             reading.value,

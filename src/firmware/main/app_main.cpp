@@ -1,14 +1,14 @@
 #include "esp_log.h"
-#include "sensor.h"
+#include "dht11.h"
 #include "wifi.h"
 #include "mqtt.h"
 
-constexpr char TAG[] = "main app";
+constexpr char TAG[] = "app";
 
 extern "C" void app_main(void)
 {
     static wifi::Wifi wifi;
-    static sensor::Dht11Sensor dht11_sensor;
+    static dht11::Dht11Sensor dht11_sensor;
     static mqtt::Mqtt mqtt;
 
     wifi.start();

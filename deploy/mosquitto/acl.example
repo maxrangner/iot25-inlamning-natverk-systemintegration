@@ -1,0 +1,5 @@
+user esp32-c3-01
+topic write iot25/max/#
+
+user backend
+topic read iot25/max/#

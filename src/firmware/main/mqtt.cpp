@@ -47,7 +47,7 @@ void Mqtt::publish(const SensorReading &reading) {
     ESP_LOGI(TAG,
              "\n\n"
              "┌─ MQTT Publish · asd ──────────────────────\n"
-             "| sensorId: %s\n"
+             "│ sensorId: %s\n"
              "│ topic: %s\n"
              "│ value: %f\n"
              "│ unit: %s\n"

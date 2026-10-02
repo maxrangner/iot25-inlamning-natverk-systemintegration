@@ -2,3 +2,5 @@
 CONFIG_IDF_TARGET="esp32c3"
 CONFIG_LOG_DEFAULT_LEVEL_INFO=y
 CONFIG_ESP_MAIN_TASK_STACK_SIZE=4096
+# Verify the broker certificate validity period (requires SNTP time)
+CONFIG_MBEDTLS_HAVE_TIME_DATE=y

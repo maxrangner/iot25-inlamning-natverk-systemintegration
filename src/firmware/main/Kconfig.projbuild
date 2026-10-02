@@ -14,8 +14,20 @@ menu "IoT25 configuration"
 
     config IOT25_MQTT_BROKER_URI
         string "MQTT Broker"
-        default "mqtt://192.168.50.150:1883"
+        default "mqtts://192.168.50.150:8883"
         help
-            Broker for MQTT
+            Broker for MQTT. Must use mqtts://, there is no unencrypted fallback.
+
+    config IOT25_MQTT_USERNAME
+        string "MQTT username"
+        default "esp32-c3-01"
+        help
+            Username in the broker's password file.
+
+    config IOT25_MQTT_PASSWORD
+        string "MQTT password"
+        default "changeme"
+        help
+            The MQTT password. Saved in sdkconfig, which is gitignored.
 
 endmenu

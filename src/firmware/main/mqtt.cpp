@@ -1,14 +1,26 @@
 #include "mqtt.h"
+#include <string.h>
 #include "esp_log.h"
+
+extern const char ca_crt_start[] asm("_binary_ca_crt_start");
 
 namespace mqtt {
 
 constexpr char TAG[] = "mqtt";
+constexpr char kSecureScheme[] = "mqtts://";
 
 void Mqtt::start() {
+    if (strncmp(CONFIG_IOT25_MQTT_BROKER_URI, kSecureScheme, strlen(kSecureScheme)) != 0) {
+        ESP_LOGE(TAG, "Broker URI must start with %s, not starting MQTT", kSecureScheme);
+        return;
+    }
+
     esp_mqtt_client_config_t cfg = {};
     cfg.broker.address.uri = CONFIG_IOT25_MQTT_BROKER_URI;
+    cfg.broker.verification.certificate = ca_crt_start;
     cfg.credentials.client_id = "esp32-c3-01";
+    cfg.credentials.username = CONFIG_IOT25_MQTT_USERNAME;
+    cfg.credentials.authentication.password = CONFIG_IOT25_MQTT_PASSWORD;
     cfg.session.last_will.topic = kTopicStatus;
     cfg.session.last_will.msg = kOfflineMsg;
     cfg.session.last_will.qos = kQoS;

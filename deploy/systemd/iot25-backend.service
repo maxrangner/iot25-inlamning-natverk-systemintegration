@@ -1,0 +1,14 @@
+[Unit]
+Description=IoT25 backend (MQTT to REST API)
+After=network.target mosquitto.service
+
+[Service]
+User=max
+WorkingDirectory=/home/max/dev/iot25-inlamning-natverk-systemintegration/src/backend
+EnvironmentFile=/etc/iot25/backend.env
+ExecStart=/home/max/dev/iot25-inlamning-natverk-systemintegration/src/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

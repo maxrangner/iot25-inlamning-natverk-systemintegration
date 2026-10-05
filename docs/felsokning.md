@@ -1,22 +1,22 @@
 # Felsökning
 
-## Fel 1: Brokern stoppas eller nätverket bryts
+## Fel 1: Brokern stoppas
 
-1. Observerat symptom:
-2. Hur felet identifierades:
-3. Verktyg och loggar:
-4. Orsak:
-5. Åtgärd:
-6. Verifiering:
+1. Observerat symptom: backend tappade anslutningen till brokern.
+2. Hur felet identifierades: loggen visade `mqtt_disconnected` och sedan tre `mqtt_connect_failed`.
+3. Verktyg och loggar: backendens logg och `/api/status`.
+4. Orsak: Mosquitto stoppades avsiktligt.
+5. Åtgärd: Mosquitto startades igen.
+6. Verifiering: loggen visade `mqtt_connected` och `/api/status` visade `mqttReconnects: 1`.
 
-## Fel 2: Ogiltig JSON eller fel datatyp
+## Fel 2: Ogiltig JSON
 
-1. Observerat symptom:
-2. Hur felet identifierades:
-3. Verktyg och loggar:
-4. Orsak:
-5. Åtgärd:
-6. Verifiering:
+1. Observerat symptom: jag skickade `{bad` som MQTT-meddelande, men det dök inte upp i API:t.
+2. Hur felet identifierades: backend loggade `reading_rejected` med `category=syntax`.
+3. Verktyg och loggar: backendloggen och `/api/status`.
+4. Orsak: `{bad` är inte giltig JSON, så backend kunde inte läsa någon mätning ur meddelandet.
+5. Åtgärd: jag skickade giltiga mätningar igen. Backend behövde inte ändras.
+6. Verifiering: API:t visade båda sensorerna. `/api/status` visade fyra godkända meddelanden och fem valideringsfel totalt.
 
 ## Fel som uppstod under arbetet
 

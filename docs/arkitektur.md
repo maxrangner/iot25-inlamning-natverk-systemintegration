@@ -110,7 +110,7 @@ Anslutningar, frånkopplingar, mätningar, valideringsfel, enhetsstatus och API-
 
 - ESP32 behöver inte veta vem som läser datan. Fler mottagare kan läggas till utan att firmwaren ändras.
 - Litet overhead och en anslutning som hålls öppen, vilket passar en liten enhet.
-- QoS 1 ger leveransgaranti, och Last Will ger enhetsstatus utan polling.
+- QoS 1 gör att brokern kvitterar mottagna meddelanden. Mätningar som tas medan ESP32 är frånkopplad sparas inte. Last Will ger enhetsstatus utan polling.
 - TLS och inloggning finns inbyggt i Mosquitto.
 
 ## Varför REST

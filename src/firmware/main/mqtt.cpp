@@ -37,7 +37,9 @@ void Mqtt::event_handler(void *arg, esp_event_base_t base, int32_t id, void *dat
     if (id == MQTT_EVENT_CONNECTED) {
         ESP_LOGI(TAG, "Mqtt connected");
         self->connected = true;
-        esp_mqtt_client_publish(self->client, kTopicStatus, kOnlineMsg, 0, kQoS, kRetain);
+        if (esp_mqtt_client_publish(self->client, kTopicStatus, kOnlineMsg, 0, kQoS, kRetain) < 0) {
+            ESP_LOGW(TAG, "Failed to publish online status");
+        }
     } else if (id == MQTT_EVENT_DISCONNECTED) {
         ESP_LOGW(TAG, "Mqtt disconnected");
         self->connected = false;
@@ -56,9 +58,14 @@ void Mqtt::publish(const SensorReading &reading) {
     char topic[kTopicSize];
     snprintf(topic, sizeof(topic), "%s%s%s", kTopicBase, "sensor/", reading.sensorId);
 
+    if (esp_mqtt_client_publish(client, topic, payload.c_str(), 0, kQoS, kDontRetain) < 0) {
+        ESP_LOGW(TAG, "Failed to publish reading to %s", topic);
+        return;
+    }
+
     ESP_LOGI(TAG,
              "\n\n"
-             "┌─ MQTT Publish · asd ──────────────────────\n"
+             "┌─ MQTT Publish ────────────────────────────\n"
              "│ sensorId: %s\n"
              "│ topic: %s\n"
              "│ value: %f\n"
@@ -69,8 +76,6 @@ void Mqtt::publish(const SensorReading &reading) {
              reading.value,
              reading.unit
             );
-
-    esp_mqtt_client_publish(client, topic, payload.c_str(), 0, kQoS, kDontRetain);
 }
 
 std::string Mqtt::format_json(const SensorReading &reading) {

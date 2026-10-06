@@ -1,5 +1,8 @@
 *.md
 
+# Local Anki materials
+/docs/anki/
+
 # Secrets – never commit
 .env
 *.env

@@ -90,7 +90,7 @@ curl http://192.168.50.150:8000/api/status
 | Fält | Betydelse |
 |---|---|
 | `mqttConnected` | Backend är ansluten till brokern |
-| `deviceOnline` | ESP32 är ansluten till brokern |
+| `deviceOnline` | `true` när ESP32 har rapporterat `online`. `false` om enheten rapporterat `offline` eller backend inte kan bekräfta statusen, till exempel när brokern är nere |
 | `stale` | `true` om ingen mätning kommit på över 30 s |
 
 Räknarna nollställs när backend startas om.

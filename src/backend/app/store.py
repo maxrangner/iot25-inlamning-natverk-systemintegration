@@ -43,6 +43,8 @@ class Store:
                 self.mqtt_reconnects += 1
             if connected:
                 self.has_connected = True
+            else:
+                self.device_online = False
             self.mqtt_connected = connected
 
     def set_device_online(self, online):

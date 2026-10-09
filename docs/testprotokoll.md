@@ -6,8 +6,8 @@ End-to-end-tester som körts under arbetet, i den ordning delarna byggdes.
 
 | # | Test | Förväntat | Observerat | OK |
 |---|---|---|---|---|
-| 1 | Läsa DHT11 i en halv minut | Rimliga värden var 10:e s | 29 avläsningar i rad, 22,0 °C och 48 % | ✓ |
-| 2 | Dra ur sensorns datakabel | Varning, ingen krasch | `Error reading sensor` vid varje intervall, ingen omstart | ✓ |
+| 1 | Läsa DHT11 i en halv minut | Rimliga värden vid varje avläsning | 29 avläsningar i rad med 1 s intervall, 22,0 °C och 48 % | ✓ |
+| 2 | Dra ur sensorns datakabel | Varning, ingen krasch | `Error reading dht11.` vid varje intervall, ingen omstart | ✓ |
 | 3 | Ansluta till Wi-Fi | IP-adress från DHCP | `got ip 192.168.50.115` | ✓ |
 | 4 | Stänga av routern en stund | ESP32 återansluter själv | Frånkoppling loggades, återanslöt när routern kom tillbaka | ✓ |
 | 5 | ESP32 ansluter till brokern | `online` på status-topicen | `Mqtt connected`, `iot25/max/status/esp32-c3-01 online` | ✓ |

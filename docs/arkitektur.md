@@ -109,9 +109,11 @@ Anslutningar, frånkopplingar, mätningar, valideringsfel, enhetsstatus och API-
 ## Varför MQTT
 
 - ESP32 behöver inte veta vem som läser datan. Fler mottagare kan läggas till utan att firmwaren ändras.
-- Litet overhead och en anslutning som hålls öppen, vilket passar en liten enhet.
+- Litet overhead och en anslutning som hålls öppen. Det passar en liten enhet.
 - QoS 1 gör att brokern kvitterar mottagna meddelanden. Mätningar som tas medan ESP32 är frånkopplad sparas inte. Last Will ger enhetsstatus utan polling.
 - TLS och inloggning finns inbyggt i Mosquitto.
+
+Alternativet hade varit att ESP32 skickar varje mätning med HTTP POST direkt till backend. Då hade den behövt veta backendens adress, och det hade inte funnits någon Last Will som visar om den försvunnit.
 
 ## Varför REST
 

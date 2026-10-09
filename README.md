@@ -1,7 +1,5 @@
 # IoT25 - Inlämning Nätverk och Systemintegration
 
-> Arbete pågår. Avsnitten fylls på under projektets gång.
-
 ## Syfte
 
 En ESP32-C3 som mäter temperatur och luftfuktighet med en DHT11-sensormodul. Den skickar mätvärdena som JSON över MQTT med TLS till en Mosquitto-broker. En backend validerar mätningarna och gör dem tillgängliga via ett REST-API.
@@ -22,8 +20,8 @@ En ESP32-C3 som mäter temperatur och luftfuktighet med en DHT11-sensormodul. De
 Utvecklingsdator:
 - ESP-IDF v6.0.2. Sensordrivrutinen `esp-idf-lib/dht` hämtas automatiskt vid build.
 
-Server (Ubuntu/Debian):
-- Mosquitto, mosquitto-clients, Python 3 med venv, ufw
+Server (Ubuntu):
+- Mosquitto, mosquitto-clients, `Python 3.11` med venv, ufw
 
 ## Installation
 
@@ -40,7 +38,7 @@ cd iot25-inlamning-natverk-systemintegration
 Cert:
 
 ```bash
-scripts/gen-certs.sh <server-ip>
+bash scripts/gen-certs.sh <server-ip>
 sudo mkdir -p /etc/mosquitto/certs
 sudo cp certs/ca.crt certs/server.crt certs/server.key /etc/mosquitto/certs/
 sudo chown mosquitto: /etc/mosquitto/certs/server.key
@@ -84,6 +82,7 @@ sudo ufw enable
 CA-certet byggs in i firmwaren och måste kopieras från servern:
 
 ```bash
+mkdir src/firmware/certs
 scp <server-ip>:<repo>/certs/ca.crt src/firmware/certs/ca.crt
 ```
 
@@ -107,7 +106,7 @@ Backend: `/etc/iot25/backend.env`.
 | `MQTT_USERNAME` | `backend` |
 | `MQTT_PASSWORD` | Lösenordet från `mosquitto_passwd` |
 
-## Starta lösningen
+## Starta systemet
 
 ```bash
 # Server
@@ -131,6 +130,7 @@ idf.py build flash monitor
 - Mätningar som tas medan ESP32an är offline slängs.
 - DHT11 mäter bara hela grader och procent, ±2 °C och ±5 %. En SHT31 vore noggrannare.
 - Servercertet innehåller serverns IP. Byts IP:n måste certet skapas om.
+- ESP32an behöver internet för att synka klockan. Utan rätt tid godkänns inte certet och den ansluter inte till brokern.
 - Säkerhetsbegränsningar finns i [sakerhet.md](docs/sakerhet.md#kvarvarande-begränsningar).
 
 ## Dokumentation

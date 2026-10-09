@@ -9,7 +9,7 @@
 | ESP32 luras att ansluta till en falsk broker | Data och lösenord hamnar hos någon annan | ESP32 verifierar brokerns cert |
 | Trasig eller manipulerad data når backend | Orimliga värden i API:t, eller en krasch | Validering av all inkommande JSON |
 | Tjänster går att nå från fler datorer än nödvändigt | Större attackyta | ufw |
-| Lösenord hamnar i Git | Den som kan läsa repot kan logga in | Hemligheter bara i filer som inte versionshanteras |
+| Lösenord hamnar i Git | Den som kan läsa repot kan logga in | Hemligheter ligger bara i filer som inte är med i Git |
 
 ## Åtgärder
 
